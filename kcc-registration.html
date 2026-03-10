@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCC ITM – Student Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --crimson: #8B1A1A;
+  --crimson-deep: #5A0E0E;
+  --crimson-glow: rgba(139,26,26,0.35);
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --gold-glow: rgba(201,168,76,0.2);
+  --ink: #0F0A0A;
+  --ink-soft: #1E1414;
+  --surface: #1A1010;
+  --surface-2: #231515;
+  --border: rgba(255,255,255,0.07);
+  --border-focus: rgba(201,168,76,0.5);
+  --text: #F0EAE0;
+  --text-muted: rgba(240,234,224,0.45);
+  --text-dim: rgba(240,234,224,0.25);
+  --success: #4ADE80;
+  --warning: #FB923C;
+  --error: #F87171;
+  --info: #60A5FA;
+  --radius: 12px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ink);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── ATMOSPHERIC BG ─── */
+.bg-layer {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-gradient {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 20%, rgba(139,26,26,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(90,14,14,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 60%);
+}
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.bg-noise {
+  position: absolute; inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ─── MAIN LAYOUT ─── */
+.page-wrap {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  gap: 60px;
+  align-items: start;
+}
+
+/* ─── LEFT PANEL ─── */
+.left-panel {
+  padding: 40px 0;
+  position: sticky;
+  top: 40px;
+  animation: slideInLeft 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(139,26,26,0.15);
+  border: 1px solid rgba(139,26,26,0.3);
+  border-radius: 50px;
+  padding: 8px 18px 8px 10px;
+  margin-bottom: 36px;
+}
+.badge-icon {
+  width: 32px; height: 32px;
+  background: var(--crimson);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: -0.5px;
+}
+.badge-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.left-panel h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #fff 0%, var(--gold-light) 60%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.left-panel h1 span {
+  background: linear-gradient(135deg, var(--crimson) 0%, #E8302A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.left-panel > p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-width: 380px;
+  margin-bottom: 40px;
+}
+
+.perks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.perk {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.perk-dot {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.perk-content h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.perk-content p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.submissions-preview {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.sp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.sp-header h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.sp-count {
+  background: var(--crimson);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 22px;
+  text-align: center;
+}
+.sp-clear {
+  font-size: 0.7rem;
+  color: var(--error);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.sp-clear:hover { opacity: 1; }
+.sp-list { display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; }
+.sp-list::-webkit-scrollbar { width: 4px; }
+.sp-list::-webkit-scrollbar-track { background: transparent; }
+.sp-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.sp-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  animation: entryPop 0.35s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes entryPop {
+  from { opacity: 0; transform: translateX(-10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.sp-avatar {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--crimson-deep), var(--crimson));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  flex-shrink: 0;
+}
+.sp-info { flex: 1; min-width: 0; }
+.sp-name { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-meta { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-time { font-size: 0.65rem; color: var(--text-dim); white-space: nowrap; }
+.sp-empty {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ─── RIGHT PANEL (FORM) ─── */
+.right-panel {
+  padding: 40px 0;
+  animation: slideInRight 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--crimson), var(--gold), transparent);
+}
+.form-card::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(139,26,26,0.08) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.form-header { margin-bottom: 32px; }
+.form-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.form-header p { font-size: 0.85rem; color: var(--text-muted); }
+
+/* ─── FIELD GROUPS ─── */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field { margin-bottom: 20px; position: relative; }
+.field label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  transition: color 0.2s;
+}
+.field.has-focus label { color: var(--gold-light); }
+.field.is-valid label { color: var(--success); }
+.field.is-error label { color: var(--error); }
+
+.field-hint {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.7;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 1rem;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1;
+  opacity: 0.4;
+}
+.field.has-focus .input-icon,
+.field.is-valid .input-icon { opacity: 0.8; }
+
+.field input,
+.field select {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 13px 44px 13px 42px;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+.field input::placeholder { color: var(--text-dim); }
+.field input:focus,
+.field select:focus {
+  border-color: rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.04);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+}
+.field.is-valid input,
+.field.is-valid select {
+  border-color: rgba(74,222,128,0.4);
+  background: rgba(74,222,128,0.04);
+}
+.field.is-error input,
+.field.is-error select {
+  border-color: rgba(248,113,113,0.4);
+  background: rgba(248,113,113,0.04);
+  box-shadow: 0 0 0 3px rgba(248,113,113,0.06);
+}
+.field select option { background: #1e1414; }
+
+.status-icon {
+  position: absolute;
+  right: 14px;
+  font-size: 0.9rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  transform: scale(0.6);
+}
+.field.is-valid .status-icon.valid-icon,
+.field.is-error .status-icon.error-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ─── ERROR MSG ─── */
+.err-msg {
+  font-size: 0.72rem;
+  color: var(--error);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 18px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s;
+}
+.field.is-error .err-msg {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ok-msg {
+  font-size: 0.72rem;
+  color: var(--success);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 18px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s;
+}
+.field.is-valid .ok-msg {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── PASSWORD TOGGLE ─── */
+.pwd-toggle {
+  position: absolute;
+  right: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+  z-index: 2;
+  line-height: 1;
+}
+.pwd-toggle:hover { opacity: 0.9; }
+
+/* ─── PASSWORD STRENGTH ─── */
+.strength-wrap {
+  margin-top: 10px;
+}
+.strength-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.strength-bar {
+  height: 4px;
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.08);
+  transition: background 0.35s ease, transform 0.2s;
+}
+.strength-bar.active { transform: scaleY(1.3); }
+.strength-bar.s1.active { background: var(--error); }
+.strength-bar.s2.active { background: var(--warning); }
+.strength-bar.s3.active { background: var(--gold); }
+.strength-bar.s4.active { background: var(--success); }
+.strength-bar.s5.active { background: #34D399; }
+
+.strength-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.strength-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.strength-tips { font-size: 0.68rem; color: var(--text-dim); }
+
+.req-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.req-chip {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  transition: all 0.25s;
+  display: flex; align-items: center; gap: 4px;
+}
+.req-chip.met {
+  background: rgba(74,222,128,0.1);
+  border-color: rgba(74,222,128,0.3);
+  color: var(--success);
+}
+.req-chip::before { content: '○'; font-size: 0.55rem; }
+.req-chip.met::before { content: '●'; }
+
+/* ─── PHONE INPUT ─── */
+.phone-prefix {
+  position: absolute;
+  left: 42px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+}
+.phone-input { padding-left: 74px !important; }
+
+/* ─── DIVIDER ─── */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 24px;
+}
+.form-divider span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+/* ─── CHECKBOX ─── */
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+.checkbox-field input[type="checkbox"] { display: none; }
+.custom-checkbox {
+  width: 20px; height: 20px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 5px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  margin-top: 1px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+}
+.checkbox-field.checked .custom-checkbox {
+  background: var(--crimson);
+  border-color: var(--crimson);
+}
+.checkbox-field p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+.checkbox-field a { color: var(--gold-light); text-decoration: none; }
+
+/* ─── SUBMIT BUTTON ─── */
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--crimson-deep) 0%, var(--crimson) 50%, #C4301D 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.submit-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.submit-btn:hover:not(:disabled)::before { opacity: 1; }
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(139,26,26,0.5);
+}
+.submit-btn:active:not(:disabled) { transform: translateY(0); }
+.submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-shimmer {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+  animation: shimmer 2.5s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+/* ─── SUCCESS STATE ─── */
+.success-overlay {
+  position: absolute; inset: 0;
+  background: var(--surface);
+  border-radius: 20px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 40px;
+  text-align: center;
+}
+.success-overlay.show { display: flex; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.success-ring {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  border: 3px solid var(--success);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+  margin-bottom: 24px;
+  position: relative;
+  animation: ringPop 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes ringPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.success-ring::before {
+  content: '';
+  position: absolute; inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(74,222,128,0.2);
+}
+.success-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.success-msg { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px; max-width: 320px; }
+.success-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 16px 24px;
+  margin-bottom: 28px;
+  text-align: left;
+  width: 100%;
+  max-width: 340px;
+}
+.sc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sc-row:last-child { border: none; }
+.sc-row span:first-child { color: var(--text-dim); }
+.sc-row span:last-child { color: var(--text); font-weight: 600; }
+.btn-register-again {
+  background: rgba(255,255,255,0.07);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-register-again:hover { background: rgba(255,255,255,0.12); }
+
+/* ─── CHAR COUNTER ─── */
+.char-counter {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  transition: color 0.2s;
+}
+.char-counter.warn { color: var(--warning); }
+
+/* ─── PROGRESS BAR ─── */
+.form-progress {
+  margin-bottom: 32px;
+}
+.fp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.fp-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.fp-pct { font-size: 0.72rem; font-weight: 700; color: var(--gold-light); }
+.fp-track {
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.fp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--crimson), var(--gold));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .page-wrap { grid-template-columns: 1fr; gap: 0; padding: 24px; }
+  .left-panel { position: static; padding: 24px 0 0; }
+  .left-panel h1 { font-size: 2rem; }
+  .field-row { grid-template-columns: 1fr; }
+  .form-card { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ─── LEFT PANEL ─── -->
+  <div class="left-panel">
+    <div class="brand-badge">
+      <div class="badge-icon">K</div>
+      <span class="badge-text">KCC Institute of Technology & Management</span>
+    </div>
+
+    <h1>Join the KCC Family<span>Greater Noida</span></h1>
+
+    <p>Register now to begin your journey at one of NCR's premier technical institutes. Affiliated to AKTU · AICTE Approved.</p>
+
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-dot">🎓</div>
+        <div class="perk-content">
+          <h4>25+ Year Legacy</h4>
+          <p>A track record of excellence with 10,000+ alumni in top companies worldwide.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-dot">💼</div>
+        <div class="perk-content">
+          <h4>95% Placement Rate</h4>
+          <p>TCS, Infosys, Wipro, HCL and 200+ recruiters visit campus every year.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-dot">🏛️</div>
+        <div class="perk-content">
+          <h4>AICTE · NBA · ISO Certified</h4>
+          <p>Fully recognised with NBA-accredited programmes and ISO 9001:2015 quality systems.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-dot">🔒</div>
+        <div class="perk-content">
+          <h4>Secure Registration</h4>
+          <p>Your data is protected with 256-bit encryption. We never share your details.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submissions Preview -->
+    <div class="submissions-preview">
+      <div class="sp-header">
+        <h4>
+          📋 Recent Registrations
+          <span class="sp-count" id="spCount">0</span>
+        </h4>
+        <button class="sp-clear" onclick="clearSubmissions()">Clear All</button>
+      </div>
+      <div class="sp-list" id="spList">
+        <div class="sp-empty" id="spEmpty">No registrations yet. Be the first!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── RIGHT PANEL (FORM) ─── -->
+  <div class="right-panel">
+    <div class="form-card">
+
+      <!-- Success Overlay -->
+      <div class="success-overlay" id="successOverlay">
+        <div class="success-ring">✓</div>
+        <div class="success-title">Registration Successful!</div>
+        <p class="success-msg">Welcome to KCC ITM. Your application has been received and saved. Our admission team will contact you within 24 hours.</p>
+        <div class="success-card" id="successCard"></div>
+        <button class="btn-register-again" onclick="resetForm()">+ Register Another Student</button>
+      </div>
+
+      <!-- Form Header -->
+      <div class="form-header">
+        <h2>Student Registration</h2>
+        <p>Fill in all fields accurately. Fields marked <span style="color:var(--error)">*</span> are required.</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="form-progress">
+        <div class="fp-header">
+          <span class="fp-label">Form Completion</span>
+          <span class="fp-pct" id="fpPct">0%</span>
+        </div>
+        <div class="fp-track"><div class="fp-fill" id="fpFill"></div></div>
+      </div>
+
+      <form id="regForm" novalidate autocomplete="off">
+
+        <!-- Personal Info -->
+        <div class="form-divider"><span>Personal Information</span></div>
+
+        <div class="field-row">
+          <!-- Full Name -->
+          <div class="field" id="f-name">
+            <label>
+              Full Name <span style="color:var(--error)">*</span>
+              <span class="field-hint char-counter" id="nameCounter">0/60</span>
+            </label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="inp-name" placeholder="e.g. Rahul Kumar Sharma" maxlength="60"
+                oninput="validateName(this)" onblur="validateName(this,true)">
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg" id="err-name">⚠ Please enter your full name (min 3 chars, letters only)</div>
+            <div class="ok-msg">✓ Looks great!</div>
+          </div>
+
+          <!-- Father's Name -->
+          <div class="field" id="f-father">
+            <label>Father's Name <span style="color:var(--error)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">👨</span>
+              <input type="text" id="inp-father" placeholder="Father's full name" maxlength="60"
+                oninput="validateGenericName('f-father','inp-father','err-father')" onblur="validateGenericName('f-father','inp-father','err-father',true)">
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg" id="err-father">⚠ Enter father's name (letters only)</div>
+            <div class="ok-msg">✓ Saved</div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field" id="f-email">
+          <label>Email Address <span style="color:var(--error)">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="inp-email" placeholder="yourname@example.com"
+              oninput="validateEmail(this)" onblur="validateEmail(this,true)">
+            <span class="status-icon valid-icon">✅</span>
+            <span class="status-icon error-icon">❌</span>
+          </div>
+          <div class="err-msg" id="err-email">⚠ Enter a valid email address</div>
+          <div class="ok-msg">✓ Valid email</div>
+        </div>
+
+        <!-- Phone -->
+        <div class="field" id="f-phone">
+          <label>
+            Mobile Number <span style="color:var(--error)">*</span>
+            <span class="field-hint">Indian 10-digit</span>
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">📱</span>
+            <span class="phone-prefix">+91</span>
+            <input type="tel" id="inp-phone" class="phone-input" placeholder="9876543210" maxlength="10"
+              oninput="validatePhone(this)" onblur="validatePhone(this,true)">
+            <span class="status-icon valid-icon">✅</span>
+            <span class="status-icon error-icon">❌</span>
+          </div>
+          <div class="err-msg" id="err-phone">⚠ Enter valid 10-digit mobile (starts with 6-9)</div>
+          <div class="ok-msg">✓ Valid number</div>
+        </div>
+
+        <!-- Date of Birth + Gender -->
+        <div class="field-row">
+          <div class="field" id="f-dob">
+            <label>Date of Birth <span style="color:var(--error)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🎂</span>
+              <input type="date" id="inp-dob" oninput="validateDOB(this)" onblur="validateDOB(this,true)">
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg" id="err-dob">⚠ Must be between 15–35 years old</div>
+            <div class="ok-msg">✓ Age verified</div>
+          </div>
+          <div class="field" id="f-gender">
+            <label>Gender <span style="color:var(--error)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">⚧</span>
+              <select id="inp-gender" onchange="validateSelect('f-gender','inp-gender')">
+                <option value="">— Select —</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Non-Binary</option>
+                <option>Prefer not to say</option>
+              </select>
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg" id="err-gender">⚠ Please select gender</div>
+            <div class="ok-msg">✓ Selected</div>
+          </div>
+        </div>
+
+        <!-- Academic Info -->
+        <div class="form-divider"><span>Academic Information</span></div>
+
+        <div class="field-row">
+          <div class="field" id="f-prog">
+            <label>Programme <span style="color:var(--error)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🎓</span>
+              <select id="inp-prog" onchange="validateSelect('f-prog','inp-prog')">
+                <option value="">— Select Programme —</option>
+                <option>B.Tech – CSE</option>
+                <option>B.Tech – ME</option>
+                <option>B.Tech – EE</option>
+                <option>B.Tech – ECE</option>
+                <option>B.Tech – Civil</option>
+                <option>MBA</option>
+                <option>MCA</option>
+                <option>Polytechnic – CS</option>
+                <option>Polytechnic – ME</option>
+              </select>
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg">⚠ Please select a programme</div>
+            <div class="ok-msg">✓ Selected</div>
+          </div>
+          <div class="field" id="f-year">
+            <label>Academic Year <span style="color:var(--error)">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📅</span>
+              <select id="inp-year" onchange="validateSelect('f-year','inp-year')">
+                <option value="">— Select Year —</option>
+                <option>2025–26 (New Admission)</option>
+                <option>2024–25 (Current)</option>
+                <option>Lateral Entry 2025</option>
+              </select>
+              <span class="status-icon valid-icon">✅</span>
+              <span class="status-icon error-icon">❌</span>
+            </div>
+            <div class="err-msg">⚠ Please select academic year</div>
+            <div class="ok-msg">✓ Selected</div>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="form-divider"><span>Account Security</span></div>
+
+        <!-- Password -->
+        <div class="field" id="f-pwd">
+          <label>Create Password <span style="color:var(--error)">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="inp-pwd" placeholder="Create a strong password"
+              oninput="validatePassword(this)" onblur="validatePassword(this,true)">
+            <button type="button" class="pwd-toggle" id="toggle-pwd" onclick="togglePwd('inp-pwd','toggle-pwd')" title="Show/Hide Password">👁</button>
+            <span class="status-icon valid-icon" style="right:44px">✅</span>
+            <span class="status-icon error-icon" style="right:44px">❌</span>
+          </div>
+          <div class="err-msg" id="err-pwd">⚠ Password must meet all requirements below</div>
+          <div class="ok-msg">✓ Strong password!</div>
+          <!-- Strength meter -->
+          <div class="strength-wrap" id="strengthWrap" style="display:none">
+            <div class="strength-bars">
+              <div class="strength-bar s1" id="sb1"></div>
+              <div class="strength-bar s2" id="sb2"></div>
+              <div class="strength-bar s3" id="sb3"></div>
+              <div class="strength-bar s4" id="sb4"></div>
+              <div class="strength-bar s5" id="sb5"></div>
+            </div>
+            <div class="strength-meta">
+              <span class="strength-label" id="strengthLabel" style="color:var(--text-dim)">Too Weak</span>
+              <span class="strength-tips" id="strengthTips">Start typing…</span>
+            </div>
+            <div class="req-list">
+              <span class="req-chip" id="req-len">8+ chars</span>
+              <span class="req-chip" id="req-upper">Uppercase</span>
+              <span class="req-chip" id="req-lower">Lowercase</span>
+              <span class="req-chip" id="req-num">Number</span>
+              <span class="req-chip" id="req-sym">Symbol</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="field" id="f-cpwd">
+          <label>Confirm Password <span style="color:var(--error)">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔐</span>
+            <input type="password" id="inp-cpwd" placeholder="Re-enter your password"
+              oninput="validateConfirmPwd(this)" onblur="validateConfirmPwd(this,true)">
+            <button type="button" class="pwd-toggle" id="toggle-cpwd" onclick="togglePwd('inp-cpwd','toggle-cpwd')" title="Show/Hide Password">👁</button>
+            <span class="status-icon valid-icon" style="right:44px">✅</span>
+            <span class="status-icon error-icon" style="right:44px">❌</span>
+          </div>
+          <div class="err-msg" id="err-cpwd">⚠ Passwords do not match</div>
+          <div class="ok-msg">✓ Passwords match!</div>
+        </div>
+
+        <!-- Terms -->
+        <label class="checkbox-field" id="terms-field" onclick="toggleTerms()">
+          <input type="checkbox" id="inp-terms">
+          <div class="custom-checkbox" id="custom-cb"></div>
+          <p>I agree to the <a href="#" onclick="return false">Terms & Conditions</a> and <a href="#" onclick="return false">Privacy Policy</a> of KCC Institute of Technology & Management, Greater Noida.</p>
+        </label>
+
+        <button type="submit" class="submit-btn" id="submitBtn" onclick="handleSubmit(event)">
+          <div class="btn-shimmer"></div>
+          <span id="btnText">🎓 Complete Registration</span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+const validity = {
+  name: false, father: false, email: false,
+  phone: false, dob: false, gender: false,
+  prog: false, year: false, pwd: false,
+  cpwd: false, terms: false
+};
+let termsChecked = false;
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function setField(id, state) { // 'valid' | 'error' | 'idle'
+  const el = document.getElementById(id);
+  el.classList.remove('is-valid', 'is-error', 'has-focus');
+  if (state === 'valid') el.classList.add('is-valid');
+  if (state === 'error') el.classList.add('is-error');
+}
+function setFocus(id, on) {
+  const el = document.getElementById(id);
+  if (on) el.classList.add('has-focus'); else el.classList.remove('has-focus');
+}
+
+// ═══════════════════════════════════════════════
+//  VALIDATORS
+// ═══════════════════════════════════════════════
+function validateName(inp, blur=false) {
+  const val = inp.value.trim();
+  const counter = document.getElementById('nameCounter');
+  counter.textContent = `${val.length}/60`;
+  counter.classList.toggle('warn', val.length > 50);
+  setFocus('f-name', !blur);
+  const ok = val.length >= 3 && /^[a-zA-Z\s.']+$/.test(val);
+  validity.name = ok;
+  setField('f-name', val.length === 0 ? 'idle' : ok ? 'valid' : 'error');
+  updateProgress();
+}
+
+function validateGenericName(fieldId, inpId, errId, blur=false) {
+  const val = document.getElementById(inpId).value.trim();
+  setFocus(fieldId, !blur);
+  const ok = val.length >= 3 && /^[a-zA-Z\s.']+$/.test(val);
+  validity.father = ok;
+  setField(fieldId, val.length === 0 ? 'idle' : ok ? 'valid' : 'error');
+  document.getElementById(errId).textContent = '⚠ Enter a valid name (letters only, min 3 chars)';
+  updateProgress();
+}
+
+function validateEmail(inp, blur=false) {
+  const val = inp.value.trim();
+  setFocus('f-email', !blur);
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
+  validity.email = ok;
+  setField('f-email', val.length === 0 ? 'idle' : ok ? 'valid' : 'error');
+  updateProgress();
+}
+
+function validatePhone(inp, blur=false) {
+  // Strip non-digits
+  inp.value = inp.value.replace(/\D/g, '').slice(0, 10);
+  const val = inp.value;
+  setFocus('f-phone', !blur);
+  const ok = /^[6-9]\d{9}$/.test(val);
+  validity.phone = ok;
+  setField('f-phone', val.length === 0 ? 'idle' : ok ? 'valid' : 'error');
+  updateProgress();
+}
+
+function validateDOB(inp, blur=false) {
+  const val = inp.value;
+  setFocus('f-dob', !blur);
+  if (!val) { setField('f-dob', 'idle'); validity.dob = false; updateProgress(); return; }
+  const age = (new Date() - new Date(val)) / (1000 * 60 * 60 * 24 * 365.25);
+  const ok = age >= 15 && age <= 35;
+  validity.dob = ok;
+  setField('f-dob', ok ? 'valid' : 'error');
+  updateProgress();
+}
+
+function validateSelect(fieldId, inpId) {
+  const val = document.getElementById(inpId).value;
+  const key = fieldId === 'f-gender' ? 'gender' : fieldId === 'f-prog' ? 'prog' : 'year';
+  const ok = val !== '';
+  validity[key] = ok;
+  setField(fieldId, ok ? 'valid' : 'idle');
+  updateProgress();
+}
+
+// ─── PASSWORD ───
+const strengthData = [
+  { label: 'Too Weak', color: '#F87171', tip: 'Very easy to guess' },
+  { label: 'Weak', color: '#FB923C', tip: 'Add more variety' },
+  { label: 'Fair', color: '#C9A84C', tip: 'Getting better' },
+  { label: 'Strong', color: '#4ADE80', tip: 'Almost perfect' },
+  { label: 'Very Strong', color: '#34D399', tip: 'Excellent!' },
+];
+
+function calcStrength(pwd) {
+  let score = 0;
+  const reqs = {
+    len: pwd.length >= 8,
+    upper: /[A-Z]/.test(pwd),
+    lower: /[a-z]/.test(pwd),
+    num: /\d/.test(pwd),
+    sym: /[^a-zA-Z0-9]/.test(pwd),
+  };
+  if (reqs.len) score++;
+  if (reqs.upper) score++;
+  if (reqs.lower) score++;
+  if (reqs.num) score++;
+  if (reqs.sym) score++;
+  return { score, reqs };
+}
+
+function validatePassword(inp, blur=false) {
+  const val = inp.value;
+  setFocus('f-pwd', !blur);
+  const sw = document.getElementById('strengthWrap');
+  if (val.length === 0) {
+    sw.style.display = 'none';
+    setField('f-pwd', 'idle');
+    validity.pwd = false;
+    updateProgress();
+    return;
+  }
+  sw.style.display = 'block';
+  const { score, reqs } = calcStrength(val);
+  // Update bars
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('sb' + i).classList.toggle('active', i <= score);
+  }
+  // Label/tip
+  const d = strengthData[Math.max(0, score - 1)];
+  const label = document.getElementById('strengthLabel');
+  label.textContent = d.label;
+  label.style.color = d.color;
+  document.getElementById('strengthTips').textContent = d.tip;
+  // Req chips
+  document.getElementById('req-len').classList.toggle('met', reqs.len);
+  document.getElementById('req-upper').classList.toggle('met', reqs.upper);
+  document.getElementById('req-lower').classList.toggle('met', reqs.lower);
+  document.getElementById('req-num').classList.toggle('met', reqs.num);
+  document.getElementById('req-sym').classList.toggle('met', reqs.sym);
+  // Valid if score >= 4 (all reqs met = 5, let's require at least 4)
+  const ok = score >= 4;
+  validity.pwd = ok;
+  setField('f-pwd', ok ? 'valid' : (score >= 2 ? 'idle' : 'error'));
+  // Also re-validate confirm
+  if (document.getElementById('inp-cpwd').value) validateConfirmPwd(document.getElementById('inp-cpwd'));
+  updateProgress();
+}
+
+function validateConfirmPwd(inp, blur=false) {
+  const val = inp.value;
+  setFocus('f-cpwd', !blur);
+  const pwd = document.getElementById('inp-pwd').value;
+  const ok = val.length > 0 && val === pwd;
+  validity.cpwd = ok;
+  const mismatch = val.length > 0 && val !== pwd;
+  setField('f-cpwd', val.length === 0 ? 'idle' : ok ? 'valid' : mismatch ? 'error' : 'idle');
+  updateProgress();
+}
+
+// ─── SHOW/HIDE PASSWORD ───
+function togglePwd(inpId, btnId) {
+  const inp = document.getElementById(inpId);
+  const btn = document.getElementById(btnId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+    btn.title = 'Hide Password';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+    btn.title = 'Show Password';
+  }
+}
+
+// ─── TERMS ───
+function toggleTerms() {
+  termsChecked = !termsChecked;
+  validity.terms = termsChecked;
+  document.getElementById('custom-cb').textContent = termsChecked ? '✓' : '';
+  document.getElementById('terms-field').classList.toggle('checked', termsChecked);
+  updateProgress();
+}
+
+// ─── PROGRESS ───
+function updateProgress() {
+  const keys = Object.keys(validity);
+  const done = keys.filter(k => validity[k]).length;
+  const pct = Math.round((done / keys.length) * 100);
+  document.getElementById('fpFill').style.width = pct + '%';
+  document.getElementById('fpPct').textContent = pct + '%';
+}
+
+// ═══════════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════════
+function handleSubmit(e) {
+  e.preventDefault();
+
+  // Touch all fields to show errors
+  validateName(document.getElementById('inp-name'), true);
+  validateGenericName('f-father','inp-father','err-father', true);
+  validateEmail(document.getElementById('inp-email'), true);
+  validatePhone(document.getElementById('inp-phone'), true);
+  validateDOB(document.getElementById('inp-dob'), true);
+  validateSelect('f-gender','inp-gender');
+  validateSelect('f-prog','inp-prog');
+  validateSelect('f-year','inp-year');
+  validatePassword(document.getElementById('inp-pwd'), true);
+  validateConfirmPwd(document.getElementById('inp-cpwd'), true);
+
+  const allValid = Object.values(validity).every(Boolean);
+  if (!allValid) {
+    // Shake the button
+    const btn = document.getElementById('submitBtn');
+    btn.style.animation = 'shake 0.4s ease';
+    setTimeout(() => btn.style.animation = '', 400);
+    // Scroll to first error
+    const firstErr = document.querySelector('.is-error');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Loading state
+  const btn = document.getElementById('submitBtn');
+  document.getElementById('btnText').textContent = '⏳ Submitting…';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const data = buildSubmission();
+    saveToLocalStorage(data);
+    showSuccess(data);
+    renderSubmissions();
+  }, 1400);
+}
+
+function buildSubmission() {
+  return {
+    id: 'KCC-' + Date.now(),
+    timestamp: new Date().toLocaleString('en-IN'),
+    name: document.getElementById('inp-name').value.trim(),
+    father: document.getElementById('inp-father').value.trim(),
+    email: document.getElementById('inp-email').value.trim(),
+    phone: '+91 ' + document.getElementById('inp-phone').value.trim(),
+    dob: document.getElementById('inp-dob').value,
+    gender: document.getElementById('inp-gender').value,
+    programme: document.getElementById('inp-prog').value,
+    year: document.getElementById('inp-year').value,
+  };
+}
+
+function saveToLocalStorage(data) {
+  const existing = JSON.parse(localStorage.getItem('kcc_submissions') || '[]');
+  existing.unshift(data);
+  localStorage.setItem('kcc_submissions', JSON.stringify(existing));
+}
+
+function showSuccess(data) {
+  document.getElementById('successCard').innerHTML = `
+    <div class="sc-row"><span>Application ID</span><span>${data.id}</span></div>
+    <div class="sc-row"><span>Name</span><span>${data.name}</span></div>
+    <div class="sc-row"><span>Programme</span><span>${data.programme}</span></div>
+    <div class="sc-row"><span>Mobile</span><span>${data.phone}</span></div>
+    <div class="sc-row"><span>Submitted</span><span>${data.timestamp}</span></div>
+  `;
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+function resetForm() {
+  document.getElementById('successOverlay').classList.remove('show');
+  document.getElementById('regForm').reset();
+  document.getElementById('strengthWrap').style.display = 'none';
+  // Reset all field states
+  Object.keys(validity).forEach(k => validity[k] = false);
+  termsChecked = false;
+  document.getElementById('custom-cb').textContent = '';
+  document.getElementById('terms-field').classList.remove('checked');
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('is-valid','is-error','has-focus'));
+  document.getElementById('nameCounter').textContent = '0/60';
+  document.getElementById('fpFill').style.width = '0%';
+  document.getElementById('fpPct').textContent = '0%';
+  document.getElementById('btnText').textContent = '🎓 Complete Registration';
+  document.getElementById('submitBtn').disabled = false;
+  // Reset toggles
+  ['inp-pwd','inp-cpwd'].forEach(id => {
+    document.getElementById(id).type = 'password';
+  });
+  document.getElementById('toggle-pwd').textContent = '👁';
+  document.getElementById('toggle-cpwd').textContent = '👁';
+}
+
+// ═══════════════════════════════════════════════
+//  SUBMISSIONS PANEL
+// ═══════════════════════════════════════════════
+function renderSubmissions() {
+  const list = JSON.parse(localStorage.getItem('kcc_submissions') || '[]');
+  const container = document.getElementById('spList');
+  const empty = document.getElementById('spEmpty');
+  document.getElementById('spCount').textContent = list.length;
+
+  if (list.length === 0) {
+    empty.style.display = 'block';
+    container.innerHTML = '';
+    container.appendChild(empty);
+    return;
+  }
+  empty.style.display = 'none';
+
+  container.innerHTML = list.map((s, i) => `
+    <div class="sp-entry" style="animation-delay:${i * 0.05}s">
+      <div class="sp-avatar">${s.name.charAt(0).toUpperCase()}</div>
+      <div class="sp-info">
+        <div class="sp-name">${s.name}</div>
+        <div class="sp-meta">${s.programme} · ${s.email}</div>
+      </div>
+      <div class="sp-time">${s.timestamp.split(',')[1] || s.timestamp}</div>
+    </div>
+  `).join('');
+}
+
+function clearSubmissions() {
+  if (!confirm('Clear all saved registrations from this device?')) return;
+  localStorage.removeItem('kcc_submissions');
+  renderSubmissions();
+}
+
+// ─── SHAKE ANIMATION ───
+const style = document.createElement('style');
+style.textContent = `@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}`;
+document.head.appendChild(style);
+
+// ─── ADD FOCUS CLASSES ───
+document.querySelectorAll('.field input, .field select').forEach(inp => {
+  const fieldId = inp.closest('.field').id;
+  inp.addEventListener('focus', () => document.getElementById(fieldId)?.classList.add('has-focus'));
+  inp.addEventListener('blur', () => document.getElementById(fieldId)?.classList.remove('has-focus'));
+});
+
+// ─── INIT ───
+renderSubmissions();
+</script>
+</body>
+</html>
