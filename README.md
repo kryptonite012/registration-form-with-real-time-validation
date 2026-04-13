@@ -49,3 +49,7 @@ Success confirmation screen
 Auto-scroll to errors
 
 Animated feedback
+
+Real time analysis 
+
+user enhanced experience 
